@@ -1,0 +1,14 @@
+fastapi
+asyncpg
+pydantic-settings
+sqlmodel
+alembic
+passlib
+pyjwt
+aioredis
+itsdangerous
+celery
+asgiref
+langchain
+langchain_community
+streamlit
