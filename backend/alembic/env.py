@@ -1,6 +1,6 @@
 from src.db.main import async_engine
 from src.db.models import SQLModel
-from config import Config
+from src.config import Config
 from logging.config import fileConfig
 from sqlalchemy import engine_from_config
 from sqlalchemy import pool
