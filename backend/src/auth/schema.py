@@ -32,7 +32,7 @@ class UsernameModel(BaseModel):
 
 
 class PasswordResetRequestModel(BaseModel):
-    username: str
+    email: str
 
 class PasswordResetConfirmModel(BaseModel):
     new_password : str

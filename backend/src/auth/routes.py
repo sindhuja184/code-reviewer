@@ -1,9 +1,9 @@
 from fastapi import APIRouter, status, Depends
-from src.auth.schema import UserCreateModel, UserModel, UserLoginModel, UsernameModel, PasswordResetConfirmModel, PasswordResetConfirmModel
+from src.auth.schema import UserCreateModel, UserModel, UserLoginModel, UsernameModel, PasswordResetConfirmModel, PasswordResetRequestModel
 from src.db.main import get_session
 from sqlmodel.ext.asyncio.session import AsyncSession
 from fastapi.exceptions import HTTPException
-from .utils import create_access_token, decode_token, verify_password, create_url_safe_token, decode_url_safe_token
+from .utils import create_access_token, decode_token, generate_password_hash, verify_password, create_url_safe_token, decode_url_safe_token
 from datetime import timedelta, date, datetime
 from .dependencies import RefreshTokenBearer, AccessTokenBearer, get_current_user, RoleChecker
 from src.config import Config
@@ -194,3 +194,85 @@ async def revoke_token(
         }, 
         status_code= status.HTTP_200_OK
     )
+
+
+@auth_router.post('/password-reset-request')
+async def password_reset_request(
+    email_data : PasswordResetRequestModel
+):
+    email = email_data.email
+
+    token = create_url_safe_token(
+        {
+            'email': email
+        }
+    )
+
+    link = f"http://{Config.DOMAIN}/api/v1/auth/password-reset-confirm/{token}"
+
+
+    html_message = f"""
+    <h1>Reset your password</h1>
+    <p>Please click this <a href = "{link}">link</a> to reset your password</p>
+    """
+    message = create_message(
+        receipients=[email],
+        subject= 'Reset your password - from code reviwer',
+        body = html_message
+    )
+
+    await mail.send_message(message)
+    
+    return JSONResponse(
+        content = {
+            "message": "Please check your inbox to reset yur password"
+        },
+        status_code = status.HTTP_200_OK
+    )
+
+
+@auth_router.post('/password-reset-confirm/{token}')
+async def reset_account_password(
+    token: str,
+    password: PasswordResetConfirmModel,
+    session: AsyncSession = Depends(get_session),
+):
+    new_password = password.new_password
+    confirm_password = password.confirm_password
+    if new_password != confirm_password:
+        raise HTTPException(
+            detail = "Passwords do not match",
+            status_code=status.HTTP_400_BAD_REQUEST
+        )
+    
+    token_data = decode_url_safe_token(token)
+
+    passwordh = generate_password_hash(new_password)
+
+    user_email = token_data.get("email")
+    if user_email:
+        user = await user_service.get_user_by_email(user_email, session)
+
+        if not user:
+            raise HTTPException(
+                status_code= status.HTTP_404_NOT_FOUND,
+                detail= "User Not Found"
+            )
+        
+        await user_service.update_user(user, {"password_hash": passwordh}, session)
+
+        return JSONResponse(
+            content = {
+                "message" : "Password changed successfully"
+            },
+            status_code= status.HTTP_200_OK
+        )
+    return JSONResponse(
+        content = {
+            "message": "Oops! Error occurred in changing the password"
+        },
+        status_code= status.HTTP_500_INTERNAL_SERVER_ERROR
+    )
+
+
+
