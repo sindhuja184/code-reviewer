@@ -8,6 +8,16 @@ from fastapi.exceptions import HTTPException
 from fastapi import status 
 
 class UserService:
+    async def get_user_by_email(
+            self, 
+            email:str, 
+            session: AsyncSession):
+        statement = select(User).where(User.email == email).options(selectinload(User.code_reviews))
+        result = await session.execute(statement)
+        user = result.scalars().first()
+        return user
+    
+    
     async def get_user_by_username(
             self, 
             username: str,
