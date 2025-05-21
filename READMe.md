@@ -48,7 +48,7 @@ EMAIL_PORT= Enter_port_name
 EMAIL_USER= Enter_username
 EMAIL_PASSWORD= Enter_email_password
 REDIS_URL= Enter_redis_url
-``
+```
 5. Alembic Commands
 
 ```bash
