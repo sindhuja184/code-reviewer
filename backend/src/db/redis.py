@@ -1,5 +1,5 @@
 from redis.asyncio import Redis
-from src.config import Config
+from config import Config
 
 JTI_EXPIRY = 3600
 

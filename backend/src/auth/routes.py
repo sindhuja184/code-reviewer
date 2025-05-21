@@ -1,16 +1,16 @@
 from fastapi import APIRouter, status, Depends
-from src.auth.schema import UserCreateModel, UserModel, UserLoginModel, UsernameModel, PasswordResetConfirmModel, PasswordResetRequestModel
-from src.db.main import get_session
+from .schema import UserCreateModel, UserModel, UserLoginModel, UsernameModel, PasswordResetConfirmModel, PasswordResetRequestModel
+from db.main import get_session
 from sqlmodel.ext.asyncio.session import AsyncSession
 from fastapi.exceptions import HTTPException
 from .utils import create_access_token, decode_token, generate_password_hash, verify_password, create_url_safe_token, decode_url_safe_token
 from datetime import timedelta, date, datetime
-from .dependencies import RefreshTokenBearer, AccessTokenBearer, get_current_user, RoleChecker
-from src.config import Config
+from .dependencies import RefreshTokenBearer, AccessTokenBearer, get_current_user
+from config import Config
 from auth.service import UserService
 from fastapi.responses import JSONResponse
-from src.db.redis import add_jti_to_blacklist
-from src.mail import create_message, mail
+from db.redis import add_jti_to_blacklist
+from mail import create_message, mail
 
 auth_router = APIRouter()
 user_service = UserService()
@@ -143,7 +143,6 @@ async def login_users(
                 user_data = {
                     'username': user.username,
                     'user_uid': str(user.uid),
-                    'role' : user.role
                 }
             )
 

@@ -1,9 +1,9 @@
-from src.db.models import User
+from db.models import User
 from sqlmodel.ext.asyncio.session import AsyncSession
 from sqlmodel import select
 from sqlalchemy.orm import selectinload
-from src.auth.schema import UserCreateModel
-from src.auth.utils import generate_password_hash
+from auth.schema import UserCreateModel
+from auth.utils import generate_password_hash
 from fastapi.exceptions import HTTPException
 from fastapi import status 
 

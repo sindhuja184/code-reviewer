@@ -1,7 +1,7 @@
 from passlib.context import CryptContext
 from datetime import timedelta, datetime
 import jwt
-from src.config import Config
+from config import Config
 import uuid 
 import logging
 from itsdangerous import URLSafeTimedSerializer
