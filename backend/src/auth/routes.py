@@ -126,7 +126,7 @@ async def verify_user_account(
 @auth_router.post('/login')
 async def login_users(
     login_data: UserLoginModel,
-    session: AsyncSession = Depends(get_session)
+    session: AsyncSession = Depends(get_session),
 ):
     username = login_data.username
     password = login_data.password

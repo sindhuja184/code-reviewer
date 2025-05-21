@@ -88,6 +88,9 @@ class AccessTokenBearer(TokenBearer):
                 status_code= status.HTTP_403_FORBIDDEN,
                 detail= "Access Token is Required"
             )
+        # current_user = get_current_user
+        # if not current_user.is_verified:
+        #     raise AccountNotVerified()
 
 
 class RefreshTokenBearer(TokenBearer):
@@ -106,7 +109,14 @@ async def get_current_user(
     
     username = token_details['user']['username']
 
+
     user = await user_service.get_user_by_username(username, session)
+
+    if not user.is_verified:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="User account is not verified"
+        )
 
     return user
 

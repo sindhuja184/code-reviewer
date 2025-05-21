@@ -14,5 +14,6 @@ app = FastAPI(
 
 register_middleware(app=app)
 
+
 app.include_router(auth_router, prefix = f'/api/{version}/auth')
 app.include_router(code_router, prefix = f'/api/{version}/codereview')
