@@ -182,6 +182,18 @@ def delete_review(review_id, access_token):
     except Exception as e:
         st.error(f"Error connecting to backend: {e}")
 
+
+### Account Verification
+def show_account_verified():
+    st.markdown("<h1 style='text-align: center;'>✅ Account Verified</h1>", unsafe_allow_html=True)
+    st.markdown("<p style='text-align: center;'>Your account has been successfully verified! You can now log in and start using Code Reviewer.</p>", unsafe_allow_html=True)
+
+    if st.button("Go to Login Page"):
+        st.session_state.clear()
+        st.rerun()
+
+
+
 def logout():
     st.session_state.clear()
     st.rerun()
@@ -271,9 +283,13 @@ def show_dashboard():
 
 def main():
     st.set_page_config(page_title="Code Reviewer")
-    if 'access_token' in st.session_state:
-        show_dashboard()
 
+    query_params = st.query_params
+
+    if "verified" in query_params:
+        show_account_verified()
+    elif 'access_token' in st.session_state:
+        show_dashboard()
     else:
         show_login_signup()
 

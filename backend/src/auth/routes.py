@@ -8,7 +8,7 @@ from datetime import timedelta, date, datetime
 from .dependencies import RefreshTokenBearer, AccessTokenBearer, get_current_user
 from config import Config
 from auth.service import UserService
-from fastapi.responses import JSONResponse
+from fastapi.responses import JSONResponse, RedirectResponse
 from db.redis import add_jti_to_blacklist
 from mail import create_message, mail
 
@@ -109,12 +109,9 @@ async def verify_user_account(
         
         await user_service.update_user(user, {"is_verified": True}, session)
 
-        return JSONResponse(
-            content = {
-                "message" : "Account is successfully verified"
-            },
-            status_code= status.HTTP_200_OK
-        )
+        return RedirectResponse(url="http://localhost:8501/?verified=true", status_code=302)
+
+
     return JSONResponse(
         content = {
             "message": "Account is successfully verified!!!"
